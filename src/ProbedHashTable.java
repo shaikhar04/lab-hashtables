@@ -159,12 +159,13 @@ public class ProbedHashTable<K,V> implements HashTable<K,V> {
     int index = find(key);
     @SuppressWarnings("unchecked")
     Pair<K,V> pair = (Pair<K,V>) pairs[index];
-    if (pair == null) {
+    if (pair == null || pair.key() != key) {
       if (REPORT_BASIC_CALLS && (reporter != null)) {
         reporter.report("get(" + key + ") failed");
       } // if reporter != null
       throw new IndexOutOfBoundsException("Invalid key: " + key);
-    } else {
+    }
+    else {
       if (REPORT_BASIC_CALLS && (reporter != null)) {
         reporter.report("get(" + key + ") => " + pair.value());
       } // if reporter != null
@@ -208,8 +209,11 @@ public class ProbedHashTable<K,V> implements HashTable<K,V> {
     if (REPORT_BASIC_CALLS && (reporter != null)) {
       reporter.report("pairs[" + index + "] = " + key + ":" + value);
     } // if reporter != null
-    // Note that we've incremented the size.
-    ++this.size;
+
+    if (result != value) {
+      // Note that we've incremented the size.
+      ++this.size;
+    } // if
     // And we're done
     return result;
   } // set(K,V)
@@ -321,7 +325,17 @@ public class ProbedHashTable<K,V> implements HashTable<K,V> {
    * return the index of an entry we can use to store that key.
    */
   int find(K key) {
-    return Math.abs(key.hashCode()) % this.pairs.length;
+    int index = Math.abs(key.hashCode()) % this.pairs.length;
+    @SuppressWarnings("unchecked")
+    Pair<K,V> pair = (Pair<K,V>) pairs[index];
+    if (pair == null || pair.key() != key) {
+      if (REPORT_BASIC_CALLS && (reporter != null)) {
+        reporter.report("get(" + key + ") failed");
+      } // if reporter != null
+      throw new IndexOutOfBoundsException("Invalid key: " + key);
+    }
+
+    return index;
   } // find(K)
 
 } // class ProbedHashTable<K,V>
