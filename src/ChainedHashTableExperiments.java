@@ -11,8 +11,9 @@ public class ChainedHashTableExperiments {
 
   /**
    * Do whatever experiments seem reasonable.
+   * @throws Exception 
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     // Create our normal output mechanism.
     final PrintWriter pen = new PrintWriter(System.out, true);
     // Convert the PrintWriter to a Reporter.
@@ -32,8 +33,9 @@ public class ChainedHashTableExperiments {
     // Conduct some of the experiments
     // HashTableExperiments.matchingKeysExpt(pen, htab);
     // HashTableExperiments.repeatedSetExpt(pen, htab);
+
     // HashTableExperiments.matchingSetExpt(pen, htab);
-    // HashTableExperiments.multipleSetExpt(pen, htab);
+    HashTableExperiments.multipleSetExpt(pen, htab);
     // HashTableExperiments.removeExpt(pen, htab);
   } // main(String[])
 

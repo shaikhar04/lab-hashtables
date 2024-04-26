@@ -10,7 +10,7 @@ import java.util.function.BiConsumer;
  * @author Samuel A. Rebelsky
  * @author Your Name Here
  */
-public class ChainedHashTable<K,V> implements HashTable<K,V> {
+public class ChainedHashTable<K, V> implements HashTable<K, V> {
 
   // +-------+-----------------------------------------------------------
   // | Notes |
@@ -143,7 +143,7 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
    * Apply a function to each key/value pair.
    */
   public void forEach(BiConsumer<? super K, ? super V> action) {
-    for (Pair<K,V> pair : this) {
+    for (Pair<K, V> pair : this) {
       action.accept(pair.key(), pair.value());
     } // for
   } // forEach(BiConsumer)
@@ -155,18 +155,22 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
   public V get(K key) {
     int index = find(key);
     @SuppressWarnings("unchecked")
-    ArrayList<Pair<K,V>> alist = (ArrayList<Pair<K,V>>) buckets[index];
+    ArrayList<Pair<K, V>> alist = (ArrayList<Pair<K, V>>) buckets[index];
     if (alist == null) {
       if (REPORT_BASIC_CALLS && (reporter != null)) {
         reporter.report("get(" + key + ") failed");
       } // if reporter != null
       throw new IndexOutOfBoundsException("Invalid key: " + key);
     } else {
-      Pair<K,V> pair = alist.get(0);
-      if (REPORT_BASIC_CALLS && (reporter != null)) {
-        reporter.report("get(" + key + ") => " + pair.value());
-      } // if reporter != null
-      return pair.value();
+      for (Pair<K, V> pair : alist) {
+        if (REPORT_BASIC_CALLS && (reporter != null)) {
+          reporter.report("get(" + key + ") => " + pair.value());
+        } // if reporter != null
+        if (pair.key().equals(key)) {
+          return pair.value();
+        } // if
+      } // for
+      throw new IndexOutOfBoundsException("Invalid key: " + key);
     } // get
   } // get(K)
 
@@ -188,9 +192,11 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
 
   /**
    * Set a value.
+   * 
+   * @throws Exception
    */
   @SuppressWarnings("unchecked")
-  public V set(K key, V value) {
+  public V set(K key, V value) throws Exception {
     V result = null;
     // If there are too many entries, expand the table.
     if (this.size > (this.buckets.length * LOAD_FACTOR)) {
@@ -199,13 +205,20 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
 
     // Find out where the key belongs and put the pair there.
     int index = find(key);
-    ArrayList<Pair<K,V>> alist = (ArrayList<Pair<K,V>>) this.buckets[index];
+    ArrayList<Pair<K, V>> alist = (ArrayList<Pair<K, V>>) this.buckets[index];
     // Special case: Nothing there yet
     if (alist == null) {
-      alist = new ArrayList<Pair<K,V>>();
+      alist = new ArrayList<Pair<K, V>>();
       this.buckets[index] = alist;
     }
-    alist.add(new Pair<K,V>(key, value));
+
+    for (Pair<K, V> p : alist) {
+      if (p.key().equals(key)) {
+        throw new Exception("Key already exists.");
+      }
+    }
+
+    alist.add(new Pair<K, V>(key, value));
     ++this.size;
 
     // Report activity, if appropriate
@@ -239,14 +252,14 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
   /**
    * Iterate the key/value pairs in some order.
    */
-  public Iterator<Pair<K,V>> iterator() {
-    return new Iterator<Pair<K,V>>() {
+  public Iterator<Pair<K, V>> iterator() {
+    return new Iterator<Pair<K, V>>() {
       public boolean hasNext() {
         // STUB
         return false;
       } // hasNext()
 
-      public Pair<K,V> next() {
+      public Pair<K, V> next() {
         // STUB
         return null;
       } // next()
@@ -262,7 +275,7 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
    */
   @Override
   public void clear() {
-    this.buckets = new Object[41];
+    this.buckets = new Object[30];
     this.size = 0;
   } // clear()
 
@@ -274,9 +287,9 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
     pen.println("Capacity: " + this.buckets.length + ", Size: " + this.size);
     for (int i = 0; i < this.buckets.length; i++) {
       @SuppressWarnings("unchecked")
-      ArrayList<Pair<K,V>> alist = (ArrayList<Pair<K,V>>) this.buckets[i];
+      ArrayList<Pair<K, V>> alist = (ArrayList<Pair<K, V>>) this.buckets[i];
       if (alist != null) {
-        for (Pair<K,V> pair : alist) {
+        for (Pair<K, V> pair : alist) {
           pen.println("  " + i + ": <" + pair.key() + "(" + pair.key().hashCode()
               + "):" + pair.value() + ">");
         } // for each pair in the bucket
@@ -308,7 +321,18 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
     if (REPORT_BASIC_CALLS && (reporter != null)) {
       reporter.report("Expanding to " + newSize + " elements.");
     } // if reporter != null
-    // STUB
+    // Remember the old table
+    Object[] oldBuckets = this.buckets;
+    // Create a new table of that size.
+    this.buckets = new Object[newSize];
+    // Move all buckets from the old table to their appropriate
+    // location in the new table.
+    for (int i = 0; i < oldBuckets.length; i++) {
+      for (int j = 0; j < oldBuckets[i]; j++) {
+
+      }
+      this.buckets[i] = oldBuckets[i];
+    } // for
   } // expand()
 
   /**
@@ -320,4 +344,3 @@ public class ChainedHashTable<K,V> implements HashTable<K,V> {
   } // find(K)
 
 } // class ChainedHashTable<K,V>
-

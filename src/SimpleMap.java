@@ -10,10 +10,11 @@ public interface SimpleMap<K,V> extends Iterable<Pair<K,V>> {
    * 
    * @return the previous value associated with key (or null, if there's no
    *         such value)
+ * @throws Exception 
    *         
    * @throws NullPointerException if the key is null.
    */
-  public V set(K key, V value);
+  public V set(K key, V value) throws Exception;
   
   /**
    * Get the value associated with key.

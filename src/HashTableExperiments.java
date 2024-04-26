@@ -42,9 +42,10 @@ public class HashTableExperiments {
 
   /**
    * Explore what happens when we use set with a repeated key.
+   * @throws Exception 
    */
   public static void repeatedSetExpt(PrintWriter pen,
-      HashTable<String,String> htab) {
+      HashTable<String,String> htab) throws Exception {
       htab.reportBasicCalls(true);
       htab.set("alpha", "alpha");
       htab.dump(pen);
@@ -61,9 +62,10 @@ public class HashTableExperiments {
 
   /**
    * Explore what happens when we use two keys that map to the same location.
+   * @throws Exception 
    */
   public static void matchingKeysExpt(PrintWriter pen,
-      HashTable<String,String> htab) {
+      HashTable<String,String> htab) throws Exception {
     pen.println("Setting anteater");
     htab.set("anteater", "anteater");
     checkGet(pen, htab, "anteater");
@@ -74,9 +76,10 @@ public class HashTableExperiments {
 
   /**
    * Explore what happens when we use two keys that map to the same location.
+   * @throws Exception 
    */
   public static void matchingSetExpt(PrintWriter pen,
-      HashTable<String,String> htab) {
+      HashTable<String,String> htab) throws Exception {
     pen.println("Setting anteater");
     htab.set("anteater", "anteater");
     htab.set("buffalo", "buffalo");
@@ -89,9 +92,10 @@ public class HashTableExperiments {
   /**
    * Explore what happens when we use set with a wide variety of key/value
    * pairs.
+   * @throws Exception 
    */
   public static void multipleSetExpt(PrintWriter pen,
-      HashTable<String,String> htab) {
+      HashTable<String,String> htab) throws Exception {
     int numwords = words.length;
     for (int i = 0; i < numwords; i++) {
       // htab.dump(pen);
